@@ -13,19 +13,23 @@ bp = Blueprint('auth', __name__, url_prefix='/auth')
 def register():
     if request.method == 'POST':
         username = request.form['username']
+        Email = request.form['Email']
         password = request.form['password']
         re_password = request.form['re-password']
+
 
         db = get_db()
         error = None
 
         if not username:
-            error = 'Username is required.'
+            error = 'Usuario es requerido'
+        elif not Email:
+            error = "correo electronico es requerido"
         elif not password:
-            error = 'Password is required.'
+            error = 'contraseña es requerida.'
         elif not re_password:
             error = "verificacion es requerida"
-        elif password != re_password:
+        elif  password != re_password:
             error = 'Las contraseñas no coinciden.'    
 
         if error is None:
@@ -73,13 +77,14 @@ def login():
 @bp.before_app_request
 def load_logged_in_user():
     user_id = session.get('user_id')
-
+ 
     if user_id is None:
         g.user = None
     else:
         g.user = get_db().execute(
             'SELECT * FROM user WHERE id = ?', (user_id,)
         ).fetchone()
+
 
 @bp.route('/logout')
 def logout():
